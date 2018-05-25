@@ -4,7 +4,8 @@
 Class library for interfacing the MiniMaestro Servo Controller.
 Written using the documentation found here: http://www.pololu.com/docs/0J40/all#5.h.4
 @author miannucci
-Spring 2014
+@author skacvinsky
+2014, 2018
 
 https://www.pololu.com/docs/0J40/5.e
 
@@ -28,19 +29,18 @@ class InitError(Exception):
     """Raise if you write into non writable port"""
     pass
 
+
 #
 _DEVICE = 0x0c  # type: int
 _SET_TARGET_CMD = 0x84  # type: int
-_SET_MULTIPLE_TARGET_CMD = 0x9F
-_SET_SPEED_CMD = 0x87
-_SET_ACCELERATION_CMD = 0x89
-_SET_PWM_CMD = 0x8A
-_GET_POSITION_CMD = 0x90
-_GET_ERRORS_CMD = 0xA1
-_GO_HOME_CMD = 0xA2
-_INIT_CMD = 0xAA
-
-import logging
+_SET_MULTIPLE_TARGET_CMD = 0x9F  # type: int
+_SET_SPEED_CMD = 0x87  # type: int
+_SET_ACCELERATION_CMD = 0x89  # type: int
+_SET_PWM_CMD = 0x8A  # type: int
+_GET_POSITION_CMD = 0x90  # type: int
+_GET_ERRORS_CMD = 0xA1  # type: int
+_GO_HOME_CMD = 0xA2  # type: int
+_INIT_CMD = 0xAA  # type: int
 
 
 class Maestro:
@@ -59,12 +59,10 @@ class Maestro:
         @param baudrate The baudrate to open communications at (default: 9600)
         @return New Maestro object
         """
-        self._commandPort = serial.Serial()
+        self._commandPort = serial.Serial(port=port, baudrate=baudrate)
         if self._commandPort.isOpen():
             self._commandPort.close()
         try:
-            self._commandPort.port = port
-            self._commandPort.baudrate = baudrate
             self._commandPort.timeout = 3
             self._commandPort.writeTimeout = 0.5
             self._commandPort.open()
@@ -196,7 +194,7 @@ class Maestro:
         @param[in] speed The speed limit of the rate of output value change in units of (0.25 microseconds)/(10 ms).
         @return True if the speed was successfully set, False otherwise
         """
-        logger.info("set speed CHAN({0}) = {1}".format(channel,speed))
+        logger.info("set speed CHAN({0}) = {1}".format(channel, speed))
         outStr = bytearray([_SET_SPEED_CMD, channel, self.low_bits(speed), self.high_bits(speed)])
         return self.write(outStr)
 
@@ -215,7 +213,7 @@ class Maestro:
         @param[in] acceleration The acc. limit of the channels output in units of (0.25 microseconds)/(10 ms)/(80 ms)
         @return True if the acceleration was set successfully, False otherwise
         """
-        logger.info("set acceleration CHAN({0}) = {1}".format(channel,acceleration))
+        logger.info("set acceleration CHAN({0}) = {1}".format(channel, acceleration))
         outStr = bytearray([_SET_ACCELERATION_CMD, channel, self.low_bits(acceleration), self.high_bits(acceleration)])
         return self.write(outStr)
 
@@ -267,7 +265,7 @@ class Maestro:
         highbits = ord(self._commandPort.read(1))
         position = lowbits + (highbits << 8)
         if logger.level == logging.DEBUG:
-            logger.debug('Position CHAN({0}) = {1}'.format(channel,position))
+            logger.debug('Position CHAN({0}) = {1}'.format(channel, position))
         return position
 
     def get_moving_state(self):
@@ -413,7 +411,7 @@ if __name__ == "__main__":
     print('position0=', servo.get_position(1))
 
     servo.set_multiple_targets(2, 0, 7000, 1, 7002, wait=True)
-    #servo.wait_until_at_target()
+    # servo.wait_until_at_target()
     print('multi position0=', servo.get_position(0))
     print('multi position1=', servo.get_position(1))
 
