@@ -1,0 +1,1 @@
+find a way to work only with bytes. it clarify the code

@@ -32,13 +32,13 @@ class InitError(Exception):
 
 #
 _DEVICE = 0x0c  # type: int
-_SET_TARGET_CMD = 0x84  # type: int
 _SET_MULTIPLE_TARGET_CMD = 0x9F  # type: int
-_SET_SPEED_CMD = 0x87  # type: int
 _SET_ACCELERATION_CMD = 0x89  # type: int
-_SET_PWM_CMD = 0x8A  # type: int
 _GET_POSITION_CMD = 0x90  # type: int
+_SET_TARGET_CMD = 0x84  # type: int
 _GET_ERRORS_CMD = 0xA1  # type: int
+_SET_SPEED_CMD = 0x87  # type: int
+_SET_PWM_CMD = 0x8A  # type: int
 _GO_HOME_CMD = 0xA2  # type: int
 _INIT_CMD = 0xAA  # type: int
 
@@ -154,12 +154,8 @@ class Maestro:
 
     def set_multiple_targets(self, num_targets, channel1, target1, channel2, target2, channel3=None, target3=None,
                              channel4=None, target4=None, wait=False):
-        """Set multiple servo targets at one time
-        @brief This command simultaneously sets the targets for a contiguous block of channels.
-        The first byte specifies how many channels are in the contiguous block; this is the number
-        of target values you will need to send. The second byte specifies the lowest channel
-        number in the block. The subsequent bytes contain the target values for each of the channels,
-        in order by channel number, in the same format as the Set Target command above.
+        """ Original has not worked. works only if you want set range of servos
+        Set multiple servo targets at one time
         @param[in] numChannels The number of channels to be changed with command (min=2, max=4)
         @param[in] channel(i) The channel to control by target (integer)
         @param[in] target[i] The integer value to trasmit as pulse width in units of (0.25 microseconds)
